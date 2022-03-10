@@ -26,6 +26,7 @@ foreach($gpo in $gpolist){Import-GPO -BackupId "1BB77C55-578B-49B6-AE60-7D4CB8AD
 Example :
 # Déclaration des variables
 $chemin = "C:\Users\admin-asi\Downloads\Windows 10 Version 1809 and Windows Server 2019 Security Baseline\GPOs"
+$i=0
 
 # Récupére la liste des ID des gpo
 $listgpo = gci -Path $chemin | select -ExpandProperty name
@@ -33,11 +34,11 @@ $listgpo = gci -Path $chemin | select -ExpandProperty name
 # Retire les charactères génant pour l'import
 $listID=foreach($ID in $listgpo){$ID -replace "[{}]", "" }
 
-foreach($gpo in $listgpo){
+foreach($ID in $listID){
+    $gpo= $listgpo[$i]
     $xml= [xml](gc "$chemin\$gpo\gpreport.xml")
     $targetName = $xml.GPO.Name
-    foreach($ID in $listID){
-        Import-GPO -BackupId $ID -TargetName $targetName `
-        -Path $chemin -CreateIfNeeded
-    }
+    Import-GPO -BackupId $ID -TargetName $targetName `
+    -Path $chemin -CreateIfNeeded
+    $i+=1
 }
