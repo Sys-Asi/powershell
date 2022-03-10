@@ -1,3 +1,43 @@
+# Déclaration des variables utiles : 
+$chemin='chemin\vers\les\GPOs\'
+
+
 # Import d'un backup de GPO depuis un dossier
 Import-GPO -BackupId "1BB77C55-578B-49B6-AE60-7D4CB8AD29AF" -TargetName "Credential Guard"
 -Path 'chemin\vers\les\GPOs\' -CreateIfNeeded
+
+
+# Cas d'un groupe de backup de GPO : 
+$listgpo=gci -Path $chemin | select -ExpandProperty name
+# Retrait des caractères génant dans les données 
+$gpolist=foreach($gpo in $listgpo){$gpo -replace "[{}]", "" }
+
+# on récupère le contenu du fichier gpreport.xml dans une variable pour avoir le nom
+$xml = [xml](gc "$chemin\{1BB77C55-578B-49B6-AE60-7D4CB8AD29AF}\gpreport.xml")
+# Récupération du nom de la GPO
+$xml.GPO.Name
+
+# Boucle sur chaque données pour réaliser l'import :
+foreach($gpo in $gpolist){Import-GPO -BackupId "1BB77C55-578B-49B6-AE60-7D4CB8AD29AF" -TargetName "Credential Guard"
+-Path 'chemin\vers\les\GPOs\' -CreateIfNeeded}
+
+
+
+Example :
+# Déclaration des variables
+$chemin = "C:\Users\admin-asi\Downloads\Windows 10 Version 1809 and Windows Server 2019 Security Baseline\GPOs"
+
+# Récupére la liste des ID des gpo
+$listgpo = gci -Path $chemin | select -ExpandProperty name
+
+# Retire les charactères génant pour l'import
+$listID=foreach($ID in $listgpo){$ID -replace "[{}]", "" }
+
+foreach($gpo in $listgpo){
+    $xml= [xml](gc "$chemin\$gpo\gpreport.xml")
+    $targetName = $xml.GPO.Name
+    foreach($ID in $listID){
+        Import-GPO -BackupId $ID -TargetName $targetName `
+        -Path $chemin -CreateIfNeeded
+    }
+}
