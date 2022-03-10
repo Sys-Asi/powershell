@@ -1,0 +1,3 @@
+# Import d'un backup de GPO depuis un dossier
+Import-GPO -BackupId "1BB77C55-578B-49B6-AE60-7D4CB8AD29AF" -TargetName "Credential Guard"
+-Path 'chemin\vers\les\GPOs\' -CreateIfNeeded
