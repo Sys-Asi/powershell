@@ -1,0 +1,13 @@
+# Déclaration des variables
+$package = "Adobe Acrobat DC (64-bit)"
+
+# récupére le package souhaité
+$exist=get-package -name $package | select -ExpandProperty name 
+
+# uninstall le package si il existe
+if($exist -ne $Null){
+    Uninstall-Package -Name $exist
+}
+
+# installation du package en 32 bits
+C:\Users\admin-asi.SOGPPM\Desktop\readerdc_fr_xa_install.exe /quiet 
